@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite thread-count="1" name="GEB BDD Suite" parallel="tests">
+  <listeners>
+    <listener class-name="Specs.Utilities.Listeners.CucumberListener"/>
+  </listeners>
+  <test name="Geb BDD Test">
+    <classes>
+      <class name="Specs.Runner"/>
+    </classes>
+  </test> <!-- Geb BDD Test -->
+</suite> <!-- GEB BDD Suite -->

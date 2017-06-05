@@ -1,0 +1,140 @@
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import java.time.LocalDate
+
+group 'org.geb.bdd'
+version '1.0-SNAPSHOT'
+
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'maven'
+
+def drivers = ["firefox", "chrome", "ie", "safari"]
+String dateAppender = System.getenv("BUILD_NUMBER")
+LocalDate currentDate = LocalDate.now();
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    def gebVersion = "0.12.2"
+    def seleniumVersion = "2.53.1"
+    def cucumberJvmVersion = "1.2.2"
+    compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    compile 'org.testng:testng:6.9.9'
+    testCompile "info.cukes:cucumber-core:$cucumberJvmVersion"
+    testCompile "info.cukes:cucumber-groovy:$cucumberJvmVersion"
+    compile group: 'info.cukes', name: 'cucumber-testng', version: '1.2.4'
+    compile group: 'info.cukes', name: 'cucumber-java', version: '1.2.4'
+    compile group: 'info.cukes', name: 'cucumber-jvm-deps', version: '1.0.5'
+    compile group: 'net.masterthought', name: 'cucumber-reporting', version: '0.6.0'
+    compile "org.gebish:geb-core:0.12.2"
+    compile "org.gradle:gradle-core:2.6"
+    compile "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+    compile "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
+    compile "org.seleniumhq.selenium:selenium-java:$seleniumVersion"
+    compile "org.codehaus.geb:geb-testng:0.7.2"
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.0'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.0'
+    compile group: 'ant', name: 'ant-apache-log4j', version: '1.6.4'
+    compile group: 'log4j', name: 'log4j', version: '1.2.16'
+    compile "com.googlecode.json-simple:json-simple:1.1"
+    compile group: 'org.easyb', name: 'maven-easyb-plugin', version: '1.4'
+    compile "org.apache.poi:poi:3.12"
+    compile "org.jsoup:jsoup:1.8.3"
+    compile "com.relevantcodes:extentreports:2.41.2" /*For Extent Reports*/
+    compile "com.google.inject:guice:4.0" /*For TestNG Specs.Utilities.Listeners*/
+    compile "com.google.guava:guava:19.0"
+    compile "org.apache.httpcomponents:fluent-hc:4.5.2"
+    compile "javax.xml.parsers:jaxp-api:1.4.5"
+    compile "org.uncommons:reportng:1.1.4"
+    compile "org.apache.poi:poi:3.16"
+    compile "org.apache.poi:poi-ooxml:3.16"
+    compile "mysql:mysql-connector-java:5.1.38"
+    compile "net.sf.opencsv:opencsv:2.3"
+    compile "commons-lang:commons-lang:2.6"
+}
+
+drivers.each { browser ->
+    task "${browser}Test"(type: Test, dependsOn: [classes, testClasses]) {
+        delete 'target','reports'
+        outputs.upToDateWhen { false }
+        doFirst {
+            testNGXMLCreator.execute()
+        }
+        useTestNG {
+            convertPropertiesToSystemProperties()
+            /*Write Code here in case you want to set properties or execute anything before even anything else executes*/
+            updateRunnerClass(System.getProperty("feature.file.path"), System.getProperty("feature.file.tags"), "src/test/groovy/" + System.getProperty("class.name").replace(".", "/") + ".groovy")
+            systemProperty "geb.env", browser;
+            suites 'src/test/resources/testng.xml'
+        }
+    }
+}
+
+task testNGXMLCreator(dependsOn: ['classes'], type: JavaExec) {
+    main = 'Specs.TestNGXMLCreator'
+    classpath = sourceSets.test.runtimeClasspath
+}
+
+
+/* This Function reads the project.properties file and puts each K,V pair into System Properties.*/
+
+public void convertPropertiesToSystemProperties() {
+    String rootDir = new File(".").getCanonicalPath() /*Absolute Path*/
+    String projectPropertiesPath = rootDir + "/src/test/resources/project.properties".replace('/', File.separator)
+    Properties properties = new Properties()
+    properties.load(new FileInputStream(projectPropertiesPath))
+    properties.each { key, value ->
+        if (System.getProperty(key) == null) {
+            System.setProperty(key, value);
+        }
+    }
+}
+
+public void updateRunnerClass(String featureFilePath,String tags, String runnerFilepath) {
+
+    File file = new File(runnerFilepath);
+    FileReader fr = new FileReader(file);
+    List<String> updated = new ArrayList<String>();
+    String s;
+    try {
+        BufferedReader br = new BufferedReader(fr);
+        while ((s = br.readLine()) != null) {
+
+                if (s.contains("        tags=")) {
+                    if (tags.equals("")) {
+                        s = '        tags=['+tags+'])';
+                    } else {
+                        s = '        tags=["'+tags+'"])';
+                    }
+                    updated.push(s);
+                }
+                else if (s.contains("        features=")){
+                    if (featureFilePath.equals("")) {
+                        s = '        features=['+featureFilePath+'],';
+                    } else {
+                        s = '        features=["'+featureFilePath+'"],';
+                    }
+                    updated.push(s);
+                }
+
+                else {
+                    updated.push(s);
+                }
+
+        }
+        FileWriter fw = new FileWriter(runnerFilepath);
+        for (int i = 0; i < updated.size(); i++) {
+            fw.write(updated.get(i));
+            fw.write("\n");
+        }
+        fw.close();
+    } catch (Exception e) {
+        System.out.println(e);
+    } finally {
+    }
+}
