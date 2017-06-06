@@ -10,10 +10,9 @@ import java.util.List;
  * Created by amit.rawat on 21/12/15.
  */
 public class GenerateReport {
-    public static void GenerateMasterthoughtReport(){
+    public static void GenerateReport(){
         try{
-            String RootDir = System.getProperty("user.dir");
-            File reportOutputDirectory = new File("target/Masterthought");
+            File reportOutputDirectory = new File("target/Reports");
             List<String> list = new ArrayList<String>();
             list.add("target/cucumber.json");
 

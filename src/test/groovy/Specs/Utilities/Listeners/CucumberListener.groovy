@@ -49,7 +49,7 @@ class CucumberListener extends GebTest implements IExecutionListener,Constants{
 
     @Override
     public void onExecutionFinish() {
-        GenerateReport.GenerateMasterthoughtReport();
+        GenerateReport.GenerateReport();
         this.driver.quit();
     }
 

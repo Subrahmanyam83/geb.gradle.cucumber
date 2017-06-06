@@ -8,7 +8,7 @@ import geb.Module
 class DashboardModule extends Module{
 
     static content = {
-        searchWikipediaTextField            {$("input",'type':'search111111')}
+        searchWikipediaTextField            {$("input",'type':'search')}
         firstHeadingTitleText               {$("#firstHeading").text()}
     }
 }
