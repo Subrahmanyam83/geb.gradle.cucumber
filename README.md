@@ -1,18 +1,18 @@
-HOW TO RUN TEST CASE
-1.  Provide the feature file path and scenario tag to run that particular scenario tagged with the given tag in the feature file mentioned.
+HOW TO RUN A TEST CASE
+1. Provide the feature file path and scenario tag of the scenario in project.proerties.
     eg: feature.file.path=src/test/resources/features/
         feature.file.tags=@sanity,@regression
         
-2. If you want to run multiple Runnners, then give the value as comma separated Runners as value to the key: class.name 
-   in project.properties.
-   
-
+2. Execute command: "gradle chromeTest"(To execute the test case on chrome) or "gradle firefoxTest"(To execute the test case on firefox)      
+        
 PARALLELISM:
 1. Set the following parameters in project.properties:
     a. threadCount, 
     b. gridUrl, 
     c. class.name = comma separated absolute paths of the Runners
     
+REPORTS:
+1. Reports are generated in the following folder: target/MasterThought/    
     
 USP of the FRAMEWORK:
 1. BDD Framework combined with Geb, Gradle and Groovy
