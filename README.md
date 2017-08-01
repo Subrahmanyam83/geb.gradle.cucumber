@@ -1,5 +1,5 @@
 HOW TO RUN A TEST CASE
-1. Provide the feature file path and scenario tag of the scenario in project.proerties.
+1. Provide the feature file path and scenario tag of the scenario in project.properties.
     eg: feature.file.path=src/test/resources/features/
         feature.file.tags=@sanity,@regression
         
@@ -12,7 +12,7 @@ PARALLELISM:
     c. class.name = comma separated absolute paths of the Runners
     
 REPORTS:
-1. Reports are generated in the following folder: target/MasterThought/    
+1. Reports are generated in the following folder: target/reports/feautre-overview    
     
 USP of the FRAMEWORK:
 1. BDD Framework combined with Geb, Gradle and Groovy

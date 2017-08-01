@@ -12,7 +12,7 @@ import java.util.List;
 public class GenerateReport {
     public static void GenerateReport(){
         try{
-            File reportOutputDirectory = new File("target/Reports");
+            File reportOutputDirectory = new File("target/reports");
             List<String> list = new ArrayList<String>();
             list.add("target/cucumber.json");
 
